@@ -52,7 +52,7 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        git clone $REPO_URL -b $REPO_BRANCH --single-branch --depth=1 openwrt
+        git clone $REPO_URL -b $REPO_BRANCH --depth=1 openwrt
         # if there's newer version of openwrt, just change this
         cd openwrt && git checkout v24.10.0
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
