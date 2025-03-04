@@ -10,6 +10,11 @@ luci-app-dockerman：docker 管理<br>
 由于openclash会强制依赖iptables-nft, 会导致 状态 -> 防火墙 页面提示 "检测到旧版规则"
 
 如果不想看这个可以在.config里删掉
+
+## To do
+更改.config，删去不必要的驱动
+/lib/firmware
+
 ***
 # 致谢
 本项目基于 [ImmortalWrt-24.10](https://github.com/immortalwrt/immortalwrt/tree/openwrt-24.10) 源码编译，使用 flippy 的[脚本](https://github.com/unifreq/openwrt_packit)和 breakingbadboy 维护的[内核](https://github.com/breakingbadboy/OpenWrt/releases/tag/kernel_stable)打包成完整固件，感谢开发者们的无私分享。<br>
