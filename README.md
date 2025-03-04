@@ -6,7 +6,9 @@ luci-app-dockerman：docker 管理<br>
 [luci-app-passwall](https://github.com/xiaorouji/openwrt-passwall)：科学上网<br>
 
 自用固件, 加了openclash和luci-app-diskman
+
 由于openclash会强制依赖iptables-nft, 会导致 状态 -> 防火墙 页面提示 "检测到旧版规则"
+
 如果不想看这个可以在.config里删掉
 ***
 # 致谢
