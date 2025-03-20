@@ -3,10 +3,10 @@
 固件包含默认皮肤、完整 IPv6 支持，以及下列 luci-app：<br>
 [luci-app-amlogic](https://github.com/ophub/luci-app-amlogic)：系统更新、文件传输、CPU 调频等<br>
 luci-app-dockerman：docker 管理<br>
-luci-app-homeproxy<br>
-## 可选项
 luci-app-openclash<br>
 由于openclash依赖iptables, 可能会导致 状态 -> 防火墙 页面提示 "检测到旧版规则", 酌情取用
+## 可选项
+luci-app-homeproxy<br>
 
 luci-app-dockerman<br>
 该docker管理软件包依赖于dockerd, 其又依赖于iptables而不是nftables, 会造成与上面的Openclash同样的问题, 且如果与openclash同时使用会造成docker bridge网络的容器无法上网
