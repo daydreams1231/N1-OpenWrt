@@ -11,7 +11,7 @@ luci-app-homeproxy<br>
 
 luci-app-dockerman<br>
 该docker管理软件包依赖于dockerd, 其又依赖于iptables而不是nftables, 会造成与上面的Openclash同样的问题<br>
-如果docker bridge网络的容器无法上网，并且你同时使用了Openclash，请尝试更新luci-app-openclash，如果仍未解决，检查网络 -> 防火墙，检查docker区域是否被允许转发流量至lan区域，或者直接将接口docker0的防火墙区域设置为lan<br>
+如果docker bridge网络的容器无法上网，检查网络 -> 防火墙，检查docker区域是否被允许转发流量至lan区域，或者直接将接口docker0的防火墙区域设置为lan<br>
 
 luci-app-cifs<br>
 用于挂载SMB分享
