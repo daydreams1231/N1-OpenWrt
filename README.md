@@ -16,7 +16,7 @@ docker 管理, 如果docker bridge网络的容器无法上网，检查网络 -> 
 # 安装后的注意事项
 在/root目录下有安装到EMMC的脚本, 不要更改其内容 <br>
 /lib/firmware下是一堆用不到的驱动, 貌似是在打包的过程中进来的, 以后有时间再把能删的列出来 <br>
-
+由于内核不是官方内核, 换源时不建议添加kmod源, 如有需要直接在`N1/.config`里加就行
 # 换源
 ```shell
 src/gz immortalwrt_core https://mirrors.ustc.edu.cn/immortalwrt/releases/24.10.1/targets/armsr/armv8/packages
@@ -25,7 +25,6 @@ src/gz immortalwrt_luci https://mirrors.ustc.edu.cn/immortalwrt/releases/24.10.1
 src/gz immortalwrt_packages https://mirrors.ustc.edu.cn/immortalwrt/releases/24.10.1/packages/aarch64_generic/packages
 src/gz immortalwrt_routing https://mirrors.ustc.edu.cn/immortalwrt/releases/24.10.1/packages/aarch64_generic/routing
 src/gz immortalwrt_telephony https://mirrors.ustc.edu.cn/immortalwrt/releases/24.10.1/packages/aarch64_generic/telephony
-src/gz immortalwrt_kmods https://mirrors.ustc.edu.cn/immortalwrt/releases/24.10.1/targets/armsr/armv8/kmods/6.6.86-1-ad0abd17f62ba101da503a2ba8a778de
 ```
 ***
 # 致谢
