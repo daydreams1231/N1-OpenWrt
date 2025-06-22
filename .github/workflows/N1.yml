@@ -82,13 +82,10 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 更改内核hash & 编译固件 
+    - name: 编译固件 
       run: |
         chmod -R 755 openwrt
         cd openwrt
-        echo "ad0abd17f62ba101da503a2ba8a778de" > .vermagic
-        sed -i '/md5/s|^.*$|    cp $(TOPDIR)/.vermagic $(LINUX_DIR)/.vermagic|' include/kernel-defaults.mk
-        sed -i '/md5/s|^.*$|  STAMP_BUILT:=$(STAMP_BUILT)_$(shell cat $(LINUX_DIR)/.vermagic)|' package/kernel/linux/Makefile
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "compile_status=success" >> $GITHUB_ENV
