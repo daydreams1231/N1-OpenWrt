@@ -12,6 +12,9 @@ docker 管理, 如果docker bridge网络的容器无法上网，检查网络 -> 
 自己改`N1/.config`来选择你想要的
 > luci-app-openclash: 由于openclash依赖iptables, 可能会导致 状态 -> 防火墙 页面提示 "检测到旧版规则", 酌情取用 <br>
 ## luci-proto-wireguard
+启用Wireguard支持
+## nfs-utils
+用于挂载NFS
 
 # 安装后的注意事项
 在/root目录下有安装到EMMC的脚本, 不要更改其内容 <br>
