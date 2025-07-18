@@ -101,8 +101,6 @@ jobs:
         GZIP_IMGS: .xz
         SCRIPT_DIY_PATH: N1/mk_s905d_n1.sh
         WHOAMI: daydreams
-        SW_FLOWOFFLOAD: 0
-        SFE_FLOW: 0
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@master
