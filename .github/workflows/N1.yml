@@ -98,7 +98,6 @@ jobs:
         KERNEL_REPO_URL: breakingbadboy/OpenWrt
         KERNEL_VERSION_NAME: 6.6.y
         PACKAGE_SOC: diy
-        GZIP_IMGS: .xz
         SCRIPT_DIY_PATH: N1/mk_s905d_n1.sh
         WHOAMI: daydreams
 
