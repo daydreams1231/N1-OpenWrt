@@ -149,10 +149,9 @@ extract_rootfs_files
 extract_amlogic_boot_files
 
 rm -rf ${TGT_ROOT}/lib/firmware/*
-rm -v $TGT_BOOT/u-boot-*.bin --exclude='u-boot-n1.bin'
-rm -v $TGT_BOOT/dtb/amlogic/*.dtb --exclude='meson-gxl-s905d-phicomm-n1.dtb'
-rm -v $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
-rm -v $TGT_BOOT/uInitrd-${KERNEL_VERSION}
+find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" -type f -delete
+rm $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
+rm $TGT_BOOT/uInitrd-${KERNEL_VERSION}
 
 echo "修改引导分区相关配置 ... "
 cd $TGT_BOOT
