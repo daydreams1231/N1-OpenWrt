@@ -63,7 +63,7 @@ COREMARK="${PWD}/files/coremark.sh"
 
 # 20200930 add
 SND_MOD="${PWD}/files/s905d/snd-meson-gx"
-DAEMON_JSON="${PWD}/files/s905d/daemon.json"
+DAEMON_JSON="" # delete this config because we dont use Docker
 
 # 20201006 add
 FORCE_REBOOT="${PWD}/files/s905d/reboot"
@@ -135,7 +135,7 @@ check_depends
 
 SKIP_MB=4
 BOOT_MB=256
-ROOTFS_MB=960
+ROOTFS_MB=1536
 SIZE=$((SKIP_MB + BOOT_MB + ROOTFS_MB))
 create_image "$TGT_IMG" "$SIZE"
 create_partition "$TGT_DEV" "msdos" "$SKIP_MB" "$BOOT_MB" "fat32" "0" "-1" "btrfs"
@@ -144,8 +144,15 @@ mount_fs "${TGT_DEV}p1" "${TGT_BOOT}" "vfat"
 mount_fs "${TGT_DEV}p2" "${TGT_ROOT}" "btrfs" "compress=zstd:${ZSTD_LEVEL}"
 echo "创建 /etc 子卷 ..."
 btrfs subvolume create $TGT_ROOT/etc
+# 这一步会释放文件到 /lib/firmware
 extract_rootfs_files
 extract_amlogic_boot_files
+
+rm -rf ${TGT_ROOT}/lib/firmware/*
+rm -v $TGT_BOOT/u-boot-*.bin --exclude='u-boot-n1.bin'
+rm -v $TGT_BOOT/dtb/amlogic/*.dtb --exclude='meson-gxl-s905d-phicomm-n1.dtb'
+rm -v $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
+rm -v $TGT_BOOT/uInitrd-${KERNEL_VERSION}
 
 echo "修改引导分区相关配置 ... "
 cd $TGT_BOOT
@@ -154,13 +161,8 @@ cat > uEnv.txt <<EOF
 LINUX=/zImage
 INITRD=/uInitrd
 
-# 下列 dtb，用到哪个就把哪个的#删除，其它的则加上 # 在行首
-
 # 用于 Phicomm N1
 FDT=/dtb/amlogic/meson-gxl-s905d-phicomm-n1.dtb
-
-# 用于 Phicomm N1 (thresh)
-#FDT=/dtb/amlogic/meson-gxl-s905d-phicomm-n1-thresh.dtb
 
 APPEND=root=UUID=${ROOTFS_UUID} rootfstype=btrfs rootflags=compress=zstd:${ZSTD_LEVEL} console=ttyAML0,115200n8 console=tty0 no_console_suspend consoleblank=0 fsck.fix=yes fsck.repair=yes net.ifnames=0 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
 EOF
@@ -193,7 +195,9 @@ adjust_kernel_env
 copy_uboot_to_fs
 write_release_info
 write_banner 
-config_first_run
+# 禁用第一次运行脚本, 它会创建用不到的第3和第4分区
+#config_first_run
+# btrfs创建子卷, 虽然用不到, 但还是留着吧
 create_snapshot "etc-000"
 write_uboot_to_disk
 clean_work_env
