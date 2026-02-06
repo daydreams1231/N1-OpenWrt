@@ -27,20 +27,29 @@
 在/root目录下有安装到eMMC的脚本, 不要更改其内容 <br>
 /lib/firmware下是一堆用不到的驱动, 貌似是在打包的过程中进来的, 以后有时间再把能删的列出来 <br>
 
+## 安装后应做的事
+1: 前往 `网络` -> `接口` <br>
+将lan6的防火墙区域调整为lan <br>
+<br>
+
+2: 还是在 `接口` 页面 <br>
+关闭lan区域的dhcp服务器, 并将IPv6 DHCP相关项全部禁用 <br>
+> 并不是说旁路由和IPv6天生八字不和, 只是大部分设备自己改不了IPv6网关, 导致若DNS解析到ipv6, 一定绕过旁路由走直连
+
 # 换源
 由于是基于大版本(v25.12)的snatshot版本构建的, 换源时为了兼容性考虑不建议换用小版本(v25.12.x)的源 <br>
 由于内核不是官方内核, 换源时不建议添加kmod源 <br>
 当然, 如果内核版本和官方版本相差不大, 可酌情换用 <br>
 ```text
 # kmod源酌情取用
-# src/gz immortalwrt_core https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/targets/armsr/armv8/kmods/6.12.66-1-a0026a4d4ab31711433cd3614cd1ad46 
+#https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/targets/armsr/armv8/kmods/6.12.66-1-a0026a4d4ab31711433cd3614cd1ad46 
 
-src/gz immortalwrt_core https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/targets/armsr/armv8/packages
-src/gz immortalwrt_base https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/base
-src/gz immortalwrt_luci https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/luci
-src/gz immortalwrt_packages https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/packages
-src/gz immortalwrt_routing https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/routing
-src/gz immortalwrt_telephony https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/telephony
+https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/targets/armsr/armv8/packages/packages.adb
+https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/base/packages.adb
+https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/luci/packages.adb
+https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/packages/packages.adb
+https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/routing/packages.adb
+https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/telephony/packages.adb
 ```
 
 # 致谢
