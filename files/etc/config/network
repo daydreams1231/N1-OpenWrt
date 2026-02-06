@@ -1,0 +1,22 @@
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config interface 'lan'
+        option proto 'dhcp'
+        option device 'eth0'
+
+config interface 'lan6'
+        option proto 'dhcpv6'
+        option device '@lan'
+        option reqaddress 'none'
+        option reqprefix 'no'
+        option norelease '0'
+        option delegate '0'
+        option sourcefilter '0'
+
+config globals 'globals'
+	option packet_steering '1'
+	option steering_flows '128'
