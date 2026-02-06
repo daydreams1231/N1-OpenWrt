@@ -96,7 +96,6 @@ jobs:
         make -j$(nproc) || make -j1 V=s
    
     - name: 打包固件
-      if: ${{ env.compile_status }} == 'success' && !cancelled()
       uses: unifreq/openwrt_packit@master
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
