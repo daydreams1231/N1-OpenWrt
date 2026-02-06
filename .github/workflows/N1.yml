@@ -101,8 +101,8 @@ jobs:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
         KERNEL_REPO_URL: ophub/kernel
         KERNEL_VERSION_NAME: 6.12.y
-        ENABLE_WIFI_K510: 0
-        PACKAGE_SOC: s905d
+        PACKAGE_SOC: diy
+        SCRIPT_DIY_PATH: mkIMG.sh
         WHOAMI: daydreams
 
     - name: 上传并发布固件
