@@ -110,6 +110,8 @@ jobs:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
         KERNEL_REPO_URL: ophub/kernel
         KERNEL_VERSION_NAME: 6.12.y
+        # 如果要换用ophub的内核, 就把下面注释去掉
+        #KERNEL_TAGS: stable
         PACKAGE_SOC: diy
         SCRIPT_DIY_PATH: mkIMG.sh
         WHOAMI: daydreams
