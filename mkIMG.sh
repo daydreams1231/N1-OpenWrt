@@ -149,6 +149,8 @@ extract_amlogic_boot_files
 find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb*" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" -type f -delete
 rm $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
 rm $TGT_BOOT/uInitrd-${KERNEL_VERSION}
+# 这些文件是主线uboot才需要的, 但N1没有主线uboot
+rm $TGT_BOOT/{boot.ini,boot.scr,boot.cmd,boot-emmc.ini,boot-emmc.cmd}
 
 echo "修改引导分区相关配置 ... "
 cd $TGT_BOOT
