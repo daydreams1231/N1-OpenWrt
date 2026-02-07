@@ -62,9 +62,16 @@ jobs:
 
     - name: Add some packages that are not in the mainline ImmortalWrt
       run: |
+        # 晶晨宝盒, 我只用得上CPU调频功能, 别的不怎么用
         git clone https://github.com/ophub/luci-app-amlogic --depth=1
+        cp -r luci-app-amlogic/luci-app-amlogic openwrt/feeds/luci/applications/
+        # easytier
         git clone https://github.com/EasyTier/luci-app-easytier --depth=1
-        cp -r luci-app-amlogic/luci-app-amlogic luci-app-easytier/luci-app-easytier luci-app-easytier/easytier openwrt/feeds/luci/applications/
+        cp -r luci-app-easytier/luci-app-easytier luci-app-easytier/easytier openwrt/feeds/luci/applications/
+        # bandix 流量统计工具, 目前应该是OpenWrt上功能最全最美观的了
+        git clone https://github.com/timsaya/luci-app-bandix --depth=1
+        git clone https://github.com/timsaya/openwrt-bandix --depth=1
+        cp -r luci-app-bandix/luci-app-bandix openwrt-bandix/openwrt-bandix openwrt/feeds/luci/applications/
 
     - name: Update & Install feeds
       run: |

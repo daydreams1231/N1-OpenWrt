@@ -86,9 +86,6 @@ UBOOT_WITH_FIP="${FIP_HOME}/n1-u-boot.bin.sd.bin"
 UBOOT_WITHOUT_FIP_HOME="${PWD}/files/meson_btld/without_fip"
 UBOOT_WITHOUT_FIP="u-boot-n1.bin"
 
-# 20210208 add
-WIRELESS_CONFIG="${PWD}/files/s905d/wireless"
-
 # 20210307 add
 SS_LIB="${PWD}/files/ss-glibc/lib-glibc.tar.xz"
 SS_BIN="${PWD}/files/ss-glibc/armv8a_crypto/ss-bin-glibc.tar.xz"
