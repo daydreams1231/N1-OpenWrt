@@ -65,13 +65,14 @@ https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_
 这一步没有教程, 自行备份数据!
 ### 写Bootloader
 在Release页面发布的固件是刷写到USB设备里面的, 并不包含uboot <br>
-在emmc install脚本里, 先写了android uboot, 后再把u-boot-n1.bin命名成u-boot.emmc, 即uboot重载 (板载uboot -> 重载uboot)
+在emmc install脚本里, 先写了android uboot, 后再把u-boot-n1.bin命名成u-boot.emmc, 即uboot重载 (板载uboot -> 重载uboot) <br>
 真正写到emmc里的是安卓用的那个uboot: u-boot-2015-phicomm-n1.bin <br>
+
 See [Ref](https://github.com/ophub/amlogic-s9xxx-armbian/issues/491) & [Ref2](https://7ji.github.io/embedded/2022/11/11/amlogic-booting.html)<br>
-可知, K510 变量代表内核版本是否大于5.10, 如果大于(K510=1), 则必须采用uboot重载的方式加载内核
-这是社区为了应对5.10以后的主线内核强制要求主线uboot的应对措施, 若该值为1, 如果是从usb启动, 则把用于overload的uboot复制成uboot.ext, 如果从eMMC启动, 则是uboot.emmc
-但flippy增加了一个patch, 让用在盒子上的内核即使版本高于5.10, 也能用旧uboot(厂商uboot)启动, 也就不需要上面这些应对措施了
-原版内核和flippy-patch内核的不同在于内核TEXT_OFFSET字段的不同, 前者是0000, 代表需要启用uboot overload, 后者是0108, 由于patch过了, 自然不需要重载了
+可知, K510 变量代表内核版本是否大于5.10, 如果大于(K510=1), 则必须采用uboot重载的方式加载内核 <br>
+这是社区为了应对5.10以后的主线内核强制要求主线uboot的应对措施, 若该值为1, 如果是从usb启动, 则把用于overload的uboot复制成uboot.ext, 如果从eMMC启动, 则是uboot.emmc <br>
+但flippy增加了一个patch, 让用在盒子上的内核即使版本高于5.10, 也能用旧uboot(厂商uboot)启动, 也就不需要上面这些应对措施了 <br>
+原版内核和flippy-patch内核的不同在于内核TEXT_OFFSET字段的不同, 前者是0000, 代表需要启用uboot overload, 后者是0108, 由于patch过了, 自然不需要重载了 <br>
 ```shell
 [[ "$(hexdump -n 15 -x "/boot/zImage" 2>/dev/null | head -n 1 | awk '{print $7}')" == "0108" ]] && echo "内核版本小于5.10"
 ```
