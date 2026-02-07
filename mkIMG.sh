@@ -149,7 +149,7 @@ extract_rootfs_files
 extract_amlogic_boot_files
 
 #rm -rf ${TGT_ROOT}/lib/firmware/*
-find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" -type f -delete
+find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb*" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" -type f -delete
 rm $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
 rm $TGT_BOOT/uInitrd-${KERNEL_VERSION}
 
