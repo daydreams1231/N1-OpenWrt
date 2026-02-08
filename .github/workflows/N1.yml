@@ -81,7 +81,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Load custom config
+    - name: 加载配置文件
       run: |
         mv files openwrt/files
         mv makeN1.config openwrt/.config
@@ -90,7 +90,7 @@ jobs:
       uses: P3TERX/ssh2actions@main
       if: (github.event.inputs.ssh == 'true') || contains(github.event.action, 'ssh')
 
-    - name: Download package
+    - name: 下载源码
       run: |
         cd openwrt
         make defconfig
@@ -103,7 +103,7 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
-   
+
     - name: 打包固件
       uses: unifreq/openwrt_packit@master
       env:
