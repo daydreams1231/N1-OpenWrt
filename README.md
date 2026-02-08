@@ -214,7 +214,16 @@ config  mount
 mv <eMMC>/etc/config/balance_irq <eMMC>/etc/balance_irq
 ```
 ## 完成
+```shell
+#!/bin/sh
 
+# 内部eMMC设备的路径
+eMMC_drive=/dev/mmcblk2
+# U盘设备路径 (含分区, 第一个是Boot分区, 第二个是rootfs)
+usb_drive=(/dev/sda1 /dev/sda2)
+
+umount -f /mnt
+```
 # Amlogic 启动顺序
 > Amlogic设备按住reset按键再启动时, 会进入升级模式, 此时会去加载aml autoscript
 
