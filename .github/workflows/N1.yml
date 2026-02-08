@@ -62,9 +62,9 @@ jobs:
 
     - name: Add some packages that are not in the official ImmortalWrt
       run: |
-        # 晶晨宝盒, 我只用得上CPU调频功能, 别的不怎么用
-        git clone https://github.com/ophub/luci-app-amlogic --depth=1
-        cp -r luci-app-amlogic/luci-app-amlogic openwrt/feeds/luci/applications/
+        # 晶晨宝盒, 我只用得上CPU调频功能, 别的不怎么用, 已被luci-app-cpufreq替代
+        #git clone https://github.com/ophub/luci-app-amlogic --depth=1
+        #cp -r luci-app-amlogic/luci-app-amlogic openwrt/feeds/luci/applications/
         
         # easytier
         git clone https://github.com/EasyTier/luci-app-easytier --depth=1

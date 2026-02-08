@@ -197,7 +197,7 @@ write_banner
 # 禁用第一次运行脚本, 它会创建用不到的第3和第4分区
 #config_first_run
 # btrfs创建子卷, 虽然用不到, 但还是留着吧
-create_snapshot "etc-000"
+# create_snapshot "etc-000"
 write_uboot_to_disk
 clean_work_env
 mv ${TGT_IMG} ${OUTPUT_DIR} && sync
