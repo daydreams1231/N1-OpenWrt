@@ -1,6 +1,6 @@
 # 2026.02 Update
-6.12系列内核(无论flippy还是ophub)疑似转发性能有问题, 旁路由模式下, N1只能跑30M左右 <br>
-类似问题在OES设备(ophub固件, 6.12内核)上也出现了, 但OES能跑50M左右 <br>
+6.12系列内核(无论flippy还是ophub)疑似转发性能有问题, 旁路由模式下, N1只能跑30M左右(偶尔是100M) <br>
+类似问题在OES设备(ophub固件, 6.12内核)上也出现了, 但OES能跑50M左右(偶尔是200M) <br>
 6.6.y : 正常, 全有线连接, 可跑到840M - 850M <br>
 6.1.y : 正常, 结果同上 <br>
 
@@ -60,53 +60,128 @@ https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_
 https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/telephony/packages.adb
 ```
 
-# 从USB全新安装到eMMC操作 (N1盒子没有主线uboot)
+# 从USB全新安装到eMMC操作
+N1盒子没有主线uboot
 ### 手动删除emmc所有分区
 这一步没有教程, 自行备份数据!
 ### 写Bootloader
 在Release页面发布的固件是刷写到USB设备里面的, 并不包含uboot <br>
-在emmc install脚本里, 先写了android uboot, 后再把u-boot-n1.bin命名成u-boot.emmc, 即uboot重载 (板载uboot -> 重载uboot) <br>
-真正写到emmc里的是安卓用的那个uboot: u-boot-2015-phicomm-n1.bin <br>
-
-See [Ref](https://github.com/ophub/amlogic-s9xxx-armbian/issues/491) & [Ref2](https://7ji.github.io/embedded/2022/11/11/amlogic-booting.html)<br>
-可知, K510 变量代表内核版本是否大于5.10, 如果大于(K510=1), 则必须采用uboot重载的方式加载内核 <br>
-这是社区为了应对5.10以后的主线内核强制要求主线uboot的应对措施, 若该值为1, 如果是从usb启动, 则把用于overload的uboot复制成uboot.ext, 如果从eMMC启动, 则是uboot.emmc <br>
-但flippy增加了一个patch, 让用在盒子上的内核即使版本高于5.10, 也能用旧uboot(厂商uboot)启动, 也就不需要上面这些应对措施了 <br>
-原版内核和flippy-patch内核的不同在于内核TEXT_OFFSET字段的不同, 前者是0000, 代表需要启用uboot overload, 后者是0108, 由于patch过了, 自然不需要重载了 <br>
-```shell
-[[ "$(hexdump -n 15 -x "/boot/zImage" 2>/dev/null | head -n 1 | awk '{print $7}')" == "0108" ]] && echo "内核版本小于5.10"
-```
-对于各个分区的位置, 不知道为什么要留blank区域， maybe env信息?
-install脚本里面在每个分区的起始位置写了1M的0, 这里就不这样做了
+一般而言, 是不用写uboot到eMMC里面的, 毕竟你能通过dd写, 就代表你已经启动了Linux, 代表板载uboot是完好的 <br>
+如果你不小心通过某些操作误删了uboot, 执行如下命令来恢复原厂uboot <br>
 ```shell
 dd if=u-boot-2015-phicomm-n1.bin  of=/dev/mmcblk2 conv=fsync,notrunc bs=1 count=444
 dd if=u-boot-2015-phicomm-n1.bin  of=/dev/mmcblk2 conv=fsync,notrunc bs=512 skip=1 seek=1
 # 第一个扇区 = 文件u-boot-2015-phicomm-n1.bin前面444字节 + 68字节(存储MBR分区表)
 # 之后的扇区 = 从文件u-boot-2015-phicomm-n1.bin的512 byte开始的内容
+# 总共写8000个Sector
 ```
+### 分区信息
+我的N1设备之前刷过原厂系统, 后来又在这个仓库编译了自用的openwrt固件
+```
+ampart /dev/mmcblk2
+===================================================================================
+ID| name            |          offset|(   human)|            size|(   human)| masks
+-----------------------------------------------------------------------------------
+ 0: bootloader                      0 (   0.00B)           400000 (   4.00M)      0  上一步写原厂uboot就是写的这里
+    (GAP)                                                 2000000 (  32.00M)
+ 1: reserved                  2400000 (  36.00M)          4000000 (  64.00M)      0
+    (GAP)                                                  800000 (   8.00M)
+ 2: cache                     6c00000 ( 108.00M)         20000000 ( 512.00M)      2
+    (GAP)                                                  800000 (   8.00M)
+ 3: env                      27400000 ( 628.00M)           800000 (   8.00M)      0  uboot env信息
+    (GAP)                                                  800000 (   8.00M)
+ 4: logo                     28400000 ( 644.00M)          2000000 (  32.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+ 5: recovery                 2ac00000 ( 684.00M)          2000000 (  32.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+ 6: rsv                      2d400000 ( 724.00M)           800000 (   8.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+ 7: tee                      2e400000 ( 740.00M)           800000 (   8.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+ 8: crypt                    2f400000 ( 756.00M)          2000000 (  32.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+ 9: misc                     31c00000 ( 796.00M)          2000000 (  32.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+10: boot                     34400000 ( 836.00M)          2000000 (  32.00M)      1
+    (GAP)                                                  800000 (   8.00M)
+11: system                   36c00000 ( 876.00M)         50000000 (   1.25G)      1
+    (GAP)                                                  800000 (   8.00M)
+12: data                     87400000 (   2.11G)        14ac00000 (   5.17G)      4
+===================================================================================
+
+fdisk -l /dev/mmcblk2
+/dev/mmcblk2p1       139264  1187839 1048576  512M  c W95 FAT32 (LBA)
+/dev/mmcblk2p2      1638400  3604479 1966080  960M 83 Linux
+/dev/mmcblk2p3      3604480  5570559 1966080  960M 83 Linux
+/dev/mmcblk2p4      5570560 15269887 9699328  4.6G 83 Linux
+
+eMMC安装脚本内定义的固件分区结构
+68 MiB -  Boot分区(512MiB) -- 220 MiB  -- Rootfs1分区 -- Rootfs2分区
+Boot分区从reserved分区的一半的位置开始写, 写了512MiB, 刚好写到cache分区末尾, 但却没动到env分区
+```
+很明显, 这个用不到的cache分区占了512M, 纯浪费, 但由于晶晨规定前四个分区必须是"引导程序, 保留, 缓存, 环境" <br>
+所以使用如下命令重新分区: ( **丢失数据警告! 备份! **) <br>
+```shell
+# 重新划分eMMC分区表 (EPT) (ophub armbian固件便是用的这个)
+ampart /dev/mmcblk2 --mode dclone data::-1:4
+# 以最简洁的方式划分 EPT
+ampart /dev/mmcblk2 --mode ecreate data:::
+
+# 具体区别查看: https://github.com/7Ji/ampart/blob/master/README_cn.md
+```
+直接执行的话会大概因为dtb文件加密了导致该命令并无效果, 需要遵从[Here](https://7ji.github.io/crack/2023/01/08/decrypt-aml-dtb.html)的教程解密
+
 ### 在eMMC上创建新的boot分区和rootfs分区并格式化
 ```shell
 fdisk /dev/mmcblk2
+p 打印分区表
+n 新建分区, 起始扇区是139264, 结束扇区是1185791, 共计512M的Boot分区
+n 新建分区, 起始: 1638400, 结束: 15269887, 共计6.5G的rootfs
 
 mkfs.fat -F32 /dev/mmcblk2p1
-mkfs.btrfs /dev/mmcblk2p2
+mkfs.btrfs -m single -L rootfs /dev/mmcblk2p2
+
+# 获取这两个分区的UUID
+blkid
 ```
-### 把USB上的boot分区和rootfs分区复制过去
-
-### 执行blkid命令, 获取各分区的UUID (主要是eMMC设备两个分区的UUID)
-
-### 挂载eMMC的第一个分区到/mnt下
+### 挂载Boot分区, 把USB上的boot分区复制过去
 ```shell
 mount /dev/mmcblk2p1 /mnt
+cp -rf /boot/* /mnt
+rm /mnt/s905* /mnt/aml*
+
+# 修改 /mnt/boot/uEnv.txt, 改emmc rootfs uuid
+APPEND=root=UUID=<EMMC_ROOTFS_UUID> rootfstype=btrfs rootflags=compress=zstd:6 console=ttyAML0,115200n8 console=tty0 no_console_suspend consoleblank=0 fsck.fix=yes fsck.repair=yes net.ifnames=0 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
+
+# 卸载 BOOT分区
+umount /mnt
 ```
-### 修改rootfs fstab
-修改 [eMMC]/etc/fstab, 写入两行: <br>
+### 挂载rootfs, 复制USB上的文件过去
+
+```shell
+mount -t btrfs -o compress=zstd:6 /dev/mmcblk2p2 /mnt
+
+# 把以下内容放进一个脚本, 再chmod +x *.sh
+mkdir -p /mnt/{boot/,dev/,media/,mnt/,proc/,run/,sys/,tmp/}
+chmod 1777 /mnt/tmp
+COPY_SRC="etc home opt root usr var"
+for src in ${COPY_SRC}; do
+    if [[ -d "${src}" ]]; then
+        echo -e "Copying [ ${src} ] ..."
+        tar -cf - ${src} | (
+            cd /mnt
+            tar -xpf -
+        )
+    fi
+done
 ```
+
+```shell
+# 修改 /mnt/etc/fstab, 写入两行:
 UUID=<EMMC_ROOTFS_UUID> /     btrfs compress=zstd:6 0 1
 UUID=<EMMC_BOOT_UUID>   /boot vfat  defaults        0 2
-```
-修改 [eMMC]/etc/config/fstab <br>
-```text
+
+# 修改 /mnt/etc/config/fstab
 config  global
         option anon_swap '0'
         option anon_mount '0'
@@ -133,21 +208,8 @@ config  mount
 ### 移动部分文件
 ```
 mv <eMMC>/etc/config/balance_irq <eMMC>/etc/balance_irq
-cp /boot/zImage <eMMC>/boot/zImage 
-cp /boot/uInitrd <eMMC>/boot/uInitrd
 ```
-emmc不需要 s905 aml开头的autoscript
-rm -f s905_autoscript* aml_autoscript*
-复制原boot分区下的 u-boot-n1.bin 到新的boot分区中, 一共三份: u-boot-n1.bin u-boot.ext u-boot.emmc, 都是一个文件
-
-写/boot/uEnv.txt
-```
-LINUX=/zImage
-INITRD=/uInitrd
-FDT=/dtb/amlogic/meson-gxl-s905d-phicomm-n1.dtb
-
-APPEND=root=UUID=<EMMC_ROOTFS_UUID> rootfstype=btrfs rootflags=compress=zstd:6 console=ttyAML0,115200n8 console=tty0 no_console_suspend consoleblank=0 fsck.fix=yes fsck.repair=yes net.ifnames=0 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
-```
+## 完成
 
 # Amlogic 启动顺序
 > Amlogic设备按住reset按键再启动时, 会进入升级模式, 此时会去加载aml autoscript
@@ -169,7 +231,30 @@ saveenv 保存env信息<br>
 emmc autoscript内容: <br>
 若板载eMMC第一个分区内有u-boot.emmc, 则直接跳转到其执行(uboot overload) <br>
 加载uEnv.txt kernel initrd dtb, 后booti启动 <br>
+# Amlogic原厂Uboot分析
+原厂提取出来的uboot: u-boot-2015-phicomm-n1.bin
+0x0 - 0x200 : 512 Bytes, 全是0, 这是MBR的一个扇区, 动不了
+0x200 - 0xA4400 : 共1313个扇区, 应该是uboot二进制文件
+0xA4400 - 0xA8040: 未知, 信息量不多
+貌似没有Env信息在这里面
+# eMMC安装脚本分析
+在emmc install脚本里, 先写了android uboot, 后再把u-boot-n1.bin命名成u-boot.emmc, 即uboot重载 (板载uboot -> 重载uboot) <br>
+真正写到emmc里的是安卓用的那个uboot: u-boot-2015-phicomm-n1.bin <br>
+
+See: <br>
+  - [uBoot overload](https://github.com/ophub/amlogic-s9xxx-armbian/issues/491) <br>
+  - [晶晨Boot流程分析](https://7ji.github.io/embedded/2022/11/11/amlogic-booting.html)<br>
+  - [晶晨专有EPT分区表](https://github.com/ophub/amlogic-s9xxx-armbian/issues/1173) <br>
+可知, K510 变量代表内核版本是否大于5.10, 如果大于(K510=1), 则必须采用uboot重载的方式加载内核 <br>
+这是社区为了应对5.10以后的主线内核强制要求新版本uboot的应对措施, 若该值为1, 如果是从usb启动, 则需要把用于overload的uboot复制成uboot.ext, 如果从eMMC启动, 则是uboot.emmc <br>
+但flippy增加了一个patch, 让用在盒子上的内核即使版本高于5.10, 也能用旧uboot(厂商uboot)启动, 也就不需要上面这些应对措施了 <br>
+主线内核和flippy-patch内核的不同在于内核TEXT_OFFSET字段的不同, 前者是0000, 代表需要启用uboot overload, 后者是0108, 由于patch过了, 自然不需要重载了 <br>
+```shell
+[[ "$(hexdump -n 15 -x "/boot/zImage" 2>/dev/null | head -n 1 | awk '{print $7}')" == "0108" ]] && echo "内核版本小于5.10, 或是Patch内核, 无需重载"
+```
 
 # 致谢
 本项目基于 [ImmortalWrt-25.12](https://github.com/immortalwrt/immortalwrt/tree/openwrt-25.12) 源码编译，使用 flippy 的[脚本](https://github.com/unifreq/openwrt_packit)和 ophub 维护的[内核](https://github.com/ophub/kernel/releases/tag/kernel_stable)打包成完整固件，感谢开发者们的无私分享。<br>
-flippy 固件的更多细节参考[恩山论坛帖子](https://www.right.com.cn/forum/thread-4076037-1-1.html)。
+flippy 固件的更多细节参考[恩山论坛帖子](https://www.right.com.cn/forum/thread-4076037-1-1.html)。 <br>
+
+分析晶晨设备eMMC固件时, 推荐使用 [ampart工具](https://github.com/7Ji/ampart) <br>

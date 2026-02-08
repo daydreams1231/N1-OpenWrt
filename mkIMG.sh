@@ -145,12 +145,13 @@ btrfs subvolume create $TGT_ROOT/etc
 extract_rootfs_files
 extract_amlogic_boot_files
 
-#rm -rf ${TGT_ROOT}/lib/firmware/*
+rm -rf ${TGT_ROOT}/lib/firmware/*
+# 删掉这些用来overload的uboot, 但保留n1的, 虽然用不到就是了
 find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb*" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" -type f -delete
 rm $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
 rm $TGT_BOOT/uInitrd-${KERNEL_VERSION}
 # 这些文件是主线uboot才需要的, 但N1没有主线uboot
-rm $TGT_BOOT/{boot.ini,boot.scr,boot.cmd,boot-emmc.ini,boot-emmc.cmd}
+rm $TGT_BOOT/{boot.ini,boot.scr,boot.cmd,boot-emmc.ini,boot-emmc.cmd,boot.bmp}
 
 echo "修改引导分区相关配置 ... "
 cd $TGT_BOOT
