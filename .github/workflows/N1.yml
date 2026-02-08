@@ -124,9 +124,7 @@ jobs:
           openwrt/bin/targets/*/*/*.tar.gz
           ${{ env.PACKAGED_OUTPUTPATH }}/*.img.gz
         body: |
-          首次使用建议全新刷写, 若更改了配置文件也建议重新刷写
-          /root下有刷入emmc的脚本, 在安装时会让你选盒子编号, N1是101号
-          不要在脚本里改boot分区大小, 如果改的太小(<320M)刷入emmc后100%变砖
+          首次使用建议全新刷写, 若更改了配置文件也建议重新刷写, 刷写到eMMC的教程请看readme, 不要使用安装脚本
           IP: dhcp获得
           账户: root
           密码: password
