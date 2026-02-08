@@ -157,14 +157,16 @@ APPEND=root=UUID=<EMMC_ROOTFS_UUID> rootfstype=btrfs rootflags=compress=zstd:6 c
 umount /mnt
 ```
 ### 挂载rootfs, 复制USB上的文件过去
-
+或者直接`dd if=/dev/sda2 of=/dev/mmcblk2p2 bs=1M status=progress` + `btrfs filesystem resize max /` 也行
 ```shell
 mount -t btrfs -o compress=zstd:6 /dev/mmcblk2p2 /mnt
 
-# 把以下内容放进一个脚本, 再chmod +x *.sh
-mkdir -p /mnt/{boot/,dev/,media/,mnt/,proc/,run/,sys/,tmp/}
-chmod 1777 /mnt/tmp
-COPY_SRC="etc home opt root usr var"
+mkdir -p /mnt/{bin/,boot/,dev/,etc/,lib/,mnt/,overlay/,proc/,rom/,root/,run/,sbin/,sys/,tmp/,usr/,www/}
+cd /mnt && ln -s tmp var && ln -s lib lib64
+
+# 在根目录下新建一个sh脚本, 再chmod +x *.sh, 再执行这个脚本 (注意要在根目录执行)
+#!/bin/sh
+COPY_SRC="bin etc lib root sbin usr www"
 for src in ${COPY_SRC}; do
     if [[ -d "${src}" ]]; then
         echo -e "Copying [ ${src} ] ..."
@@ -174,12 +176,14 @@ for src in ${COPY_SRC}; do
         )
     fi
 done
+
+exit 0
 ```
 
 ```shell
 # 修改 /mnt/etc/fstab, 写入两行:
 UUID=<EMMC_ROOTFS_UUID> /     btrfs compress=zstd:6 0 1
-UUID=<EMMC_BOOT_UUID>   /boot vfat  defaults        0 2
+LABEL=<EMMC_BOOT_UUID>   /boot vfat  defaults        0 2
 
 # 修改 /mnt/etc/config/fstab
 config  global
