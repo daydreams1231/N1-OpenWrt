@@ -108,7 +108,7 @@ jobs:
       uses: unifreq/openwrt_packit@master
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
-        KERNEL_VERSION_NAME: 6.6.y_6.12.y
+        KERNEL_VERSION_NAME: 6.1.y_6.6.y_6.12.y
         PACKAGE_SOC: diy
         SCRIPT_DIY_PATH: mkIMG.sh
         WHOAMI: daydreams
@@ -122,6 +122,7 @@ jobs:
           ${{ env.PACKAGED_OUTPUTPATH }}/*.img.gz
         body: |
           首次使用建议全新刷写, 若更改了配置文件也建议重新刷写, 刷写到eMMC的教程请看readme, 不要使用安装脚本
+          在使用BalenaEtcher时, 若刷写失败/验证失败, 请将镜像解压后再刷写
           IP: dhcp获得
           账户: root
           密码: password
