@@ -252,6 +252,7 @@ blkid | grep /dev/mmcblk2
 
 umount -R /mnt
 ```
+
 # Amlogic 启动顺序
 > Amlogic设备按住reset按键再启动时, 会进入升级模式, 此时会去加载aml autoscript
 
@@ -298,4 +299,4 @@ See: <br>
 本项目基于 [ImmortalWrt-25.12](https://github.com/immortalwrt/immortalwrt/tree/openwrt-25.12) 源码编译，使用 flippy 的[脚本](https://github.com/unifreq/openwrt_packit)和 ophub 维护的[内核](https://github.com/ophub/kernel/releases/tag/kernel_stable)打包成完整固件，感谢开发者们的无私分享。<br>
 flippy 固件的更多细节参考[恩山论坛帖子](https://www.right.com.cn/forum/thread-4076037-1-1.html)。 <br>
 
-分析晶晨设备eMMC固件时, 推荐使用 [ampart工具](https://github.com/7Ji/ampart) <br>
+分析晶晨设备eMMC分区时, 推荐使用 [ampart工具](https://github.com/7Ji/ampart) <br>
