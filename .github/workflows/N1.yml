@@ -108,7 +108,7 @@ jobs:
       uses: unifreq/openwrt_packit@master
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
-        KERNEL_VERSION_NAME: 6.6.50_6.6.80_6.6.100_6.6.110_6.12.10_6.12.40_6.12.50_6.12.60
+        KERNEL_VERSION_NAME: 6.6.y_6.12.y
         PACKAGE_SOC: diy
         SCRIPT_DIY_PATH: mkIMG.sh
         WHOAMI: daydreams
