@@ -220,12 +220,17 @@ mv <eMMC>/etc/config/balance_irq <eMMC>/etc/balance_irq
 ```shell
 #!/bin/sh
 
-# 内部eMMC设备的路径
-eMMC_drive=/dev/mmcblk2
-# U盘设备路径 (含分区, 第一个是Boot分区, 第二个是rootfs)
-usb_drive=(/dev/sda1 /dev/sda2)
+mkdir -p /mnt/{boot,rootfs}
+mount /dev/mmcblk2p1 /mnt/boot
+mount /dev/mmcblk2p2 /mnt/rootfs
 
-umount -f /mnt
+tar -cf - /boot | tar -xpf - -C /mnt/boot
+tar --exclude='boot' --exclude='dev' --exclude='mnt' --exclude='proc' --exclude='rom' --exclude='run' --exclude='sys' --exclude='tmp' -cf - / | tar -xpf - -C /mnt/rootfs
+mkdir -p /mnt/rootfs/{boot,dev,mnt,proc,rom,run,sys,tmp}
+
+blkid | grep /dev/mmcblk2
+
+umount -R /mnt
 ```
 # Amlogic 启动顺序
 > Amlogic设备按住reset按键再启动时, 会进入升级模式, 此时会去加载aml autoscript
