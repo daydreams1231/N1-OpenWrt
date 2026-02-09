@@ -65,11 +65,11 @@ jobs:
         # 晶晨宝盒, 我只用得上CPU调频功能, 别的不怎么用, 已被luci-app-cpufreq替代
         #git clone https://github.com/ophub/luci-app-amlogic --depth=1
         #cp -r luci-app-amlogic/luci-app-amlogic openwrt/feeds/luci/applications/
-        
+
         # easytier
         git clone https://github.com/EasyTier/luci-app-easytier --depth=1
         cp -r luci-app-easytier/luci-app-easytier luci-app-easytier/easytier openwrt/feeds/luci/applications/
-        
+
         # bandix 流量统计工具, 目前应该是OpenWrt上功能最全最美观的了
         git clone https://github.com/timsaya/luci-app-bandix --depth=1
         git clone https://github.com/timsaya/openwrt-bandix --depth=1
@@ -108,7 +108,7 @@ jobs:
       uses: unifreq/openwrt_packit@master
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
-        KERNEL_VERSION_NAME: 6.1.y_6.6.y_6.12.y
+        KERNEL_VERSION_NAME: 6.6.50_6.6.80_6.6.100_6.6.110_6.12.10_6.12.40_6.12.50_6.12.60
         PACKAGE_SOC: diy
         SCRIPT_DIY_PATH: mkIMG.sh
         WHOAMI: daydreams

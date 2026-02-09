@@ -1,11 +1,12 @@
 # 2026.02 Update
 新版本内核疑似转发性能有问题, 旁路由模式下, N1只能跑30M左右(偶尔是100M) <br>
 类似问题在OES设备上也出现了, 但OES能跑50M左右(偶尔是200M) <br>
-  - 6.12.65 flippy94+: 有问题, N1跑100M左右
-  - 6.12.y flippy: 有问题
-  - 6.6.65 flippy94+ : 有问题<br>
-  - 6.6.123 (ophub里的flippy94+): 400M+
-  - 6.1.160-flippy-94+o: 
+  - 6.12.65-flippy-94+: 有问题, N1跑100M左右
+  - 6.6.120-flippy-94+: 400M左右
+  - 6.6.123-flippy-94+ from ophub: 400M左右
+  - 6.1.160-flippy-94+: 系统无法启动
+  - Armbian 6.12.68-ophub: 100M左右 (固件是直接从ophub github下载的, 非自编译)
+  - Armbian 6.1.161-ophub: 400M左右 (同上)
 
 # 项目简介
 自用固件, 适配斐讯 N1, 以极致的轻量为目标, 专注于旁路由/透明代理 + 内网穿透/异地组网 <br>
@@ -18,11 +19,6 @@
   - Bandix网络统计
 
 ## 预装软件包
-### [luci-app-amlogic](https://github.com/ophub/luci-app-amlogic) 晶晨宝盒
-用于系统更新、固件刷写、CPU 调频等 <br>
-系统刷写其实就是调用 /usr/sbin/openwrt-install-amlogic, 这个脚本和 /root/install-to-emmc.sh 是完全一样的, 都会在emmc里搞4个完全没必要的分区 <br>
-末尾有安装/刷写/更新教程 <br>
-
 ### [luci-app-easytier](https://github.com/EasyTier/luci-app-easytier) Easytier组网工具
 用于异地组网 <br>
 ### luci-app-openclash / luci-app-homeproxy / 手搓旁路由
@@ -30,11 +26,15 @@
 如果都不喜欢, 可以手搓旁路由, 相较于在普通Linux上手搓, Openwrt肯定还是方便些的. <br>
 ### luci-proto-wireguard
 启用Wireguard支持
+
 ## 未安装软件包
 ### [luci-app-dockerman](https://github.com/lisaac/luci-app-dockerman)
 原因: 我不需要 <br>
 用于docker 管理, 如果docker bridge网络的容器无法上网，检查网络 -> 防火墙，检查docker区域是否被允许转发流量至上网区域(对于N1, 一般是LAN区域)，或者直接将接口docker0的防火墙区域设置为lan <br>
-
+### [luci-app-amlogic](https://github.com/ophub/luci-app-amlogic) 晶晨宝盒
+用于系统更新、固件刷写、CPU 调频等 <br>
+系统刷写其实就是调用 /usr/sbin/openwrt-install-amlogic, 这个脚本和 /root/install-to-emmc.sh 是完全一样的, 都会在emmc里搞4个完全没必要的分区 <br>
+末尾有安装/刷写/更新教程 <br>
 # 安装后的注意事项
 在/root目录下有安装到eMMC的脚本, 不要更改其内容 <br>
 
