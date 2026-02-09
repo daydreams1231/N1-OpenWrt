@@ -1,12 +1,7 @@
 # 2026.02 Update
 新版本内核疑似转发性能有问题, 旁路由模式下, N1只能跑30M左右(偶尔是100M) <br>
 类似问题在OES设备上也出现了, 但OES能跑50M左右(偶尔是200M) <br>
-  - 6.12.65-flippy-94+: 有问题, N1跑100M左右
-  - 6.6.120-flippy-94+: 400M左右
-  - 6.6.123-flippy-94+ from ophub: 400M左右
-  - 6.1.160-flippy-94+: 系统无法启动
-  - Armbian 6.12.68-ophub: 100M左右 (固件是直接从ophub github下载的, 非自编译)
-  - Armbian 6.1.161-ophub: 400M左右 (同上)
+
 
 # 项目简介
 自用固件, 适配斐讯 N1, 以极致的轻量为目标, 专注于旁路由/透明代理 + 内网穿透/异地组网 <br>
@@ -62,6 +57,31 @@ https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_
 https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/routing/packages.adb
 https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/telephony/packages.adb
 ```
+## Q&A
+### N1盒子在作为旁路由时测速跑不满或者很低(100M左右)
+在排除软件, 网线质量等外部因素后, 只可能是内核或者硬件的问题了 <br>
+但硬件故障的可能性其实非常小, 几乎可以忽略 <br>
+
+我遇到过N1测速只有30M或者100M左右的问题, 或者先跑很高, 而后快速下降的速率, 后通过换用不同版本的内核, 发现部分版本可以解决测速慢, 但仍然跑不满, 最多也就400M左右 <br>
+
+这些内核版本是我在彻底解决这个问题前一个一个试出来的, 均使用meson-gxl-s905d-phicomm-n1.dtb
+  - 6.12.65-flippy-94+: 有问题, N1跑100M左右
+  - 6.6.120-flippy-94+: 400M左右
+  - 6.6.123-flippy-94+ from ophub: 400M左右
+  - 6.1.160-flippy-94+: 系统无法启动
+  - Armbian 6.12.68-ophub: 100M左右 (固件是直接从ophub github下载的, 非自编译)
+  - Armbian 6.1.161-ophub: 400M左右 (同上)
+
+一次偶然的机会, 我发现N1盒子有个 dma-thresh 的dtb, 我于是去搜索了以下, 找到了这个帖子 [Ref](https://www.znds.com/tv-1179307-1-1.html) <br>
+这个帖子说flow control off时, 测速不正常, 时快时慢, 我对比了以下, 发现和我的情况高度吻合, 偶尔能跑满, 偶尔只有几十M, 但部分内核(比如6.12系列), 稳定跑不满(200M左右) <br>
+
+到这里, 情况就很简单了:
+  - 如果使用的是不带 -dma-thresh 的dtb, 进行第二步
+  - 执行 dmesg | grep "flow control", 查看网卡流控情况, 如果是off, 进行第三步; 如果是 rx/tx, 你的N1应该是能跑满转发性能的, 不用继续看了
+  - 修改 /boot/uEnv.txt, 修改FDT指向的dtb文件, 新的dtb文件名为: meson-gxl-s905d-phicomm-n1-thresh.dtb
+  - 重启系统. 在指定新的dtb后, flow control应该总是off了, 因为此时使用软件流控了
+
+不得不说, 网上几乎没有关于这个dtb的介绍, 提及这个的也就几个网站 <br>
 
 # 从USB全新安装到eMMC操作
 N1盒子没有主线uboot

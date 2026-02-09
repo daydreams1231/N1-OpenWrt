@@ -147,9 +147,9 @@ extract_amlogic_boot_files
 
 rm -rf ${TGT_ROOT}/lib/firmware/*
 # 删掉这些用来overload的uboot, 但保留n1的, 虽然用不到就是了
-find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb*" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" -type f -delete
-rm $TGT_BOOT/vmlinuz-${KERNEL_VERSION}
-rm $TGT_BOOT/uInitrd-${KERNEL_VERSION}
+find $TGT_BOOT \( -name "u-boot-*.bin" -o -name "*.dtb*" \) ! -name "u-boot-n1.bin" ! -name "meson-gxl-s905d-phicomm-n1.dtb" ! -name "meson-gxl-s905d-phicomm-n1-thresh.dtb" -type f -delete
+rm $TGT_BOOT/zImage
+rm $TGT_BOOT/uInitrd
 # 这些文件是主线uboot才需要的, 但N1没有主线uboot
 rm $TGT_BOOT/{boot.ini,boot.scr,boot.cmd,boot-emmc.ini,boot-emmc.cmd,boot-emmc.scr,boot.bmp}
 
@@ -157,10 +157,10 @@ echo "修改引导分区相关配置 ... "
 cd $TGT_BOOT
 rm -f uEnv.ini
 cat > uEnv.txt <<EOF
-LINUX=/zImage
-INITRD=/uInitrd
+LINUX=/vmlinuz-$KERNEL_VERSION
+INITRD=/uInitrd-$KERNEL_VERSION
 
-# 用于 Phicomm N1
+# 用于 Phicomm N1 (若转发性能异常, 自行换用 dma thresh 版本dtb)
 FDT=/dtb/amlogic/meson-gxl-s905d-phicomm-n1.dtb
 
 APPEND=root=UUID=${ROOTFS_UUID} rootfstype=btrfs rootflags=compress=zstd:${ZSTD_LEVEL} console=ttyAML0,115200n8 console=tty0 no_console_suspend consoleblank=0 fsck.fix=yes fsck.repair=yes net.ifnames=0 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1

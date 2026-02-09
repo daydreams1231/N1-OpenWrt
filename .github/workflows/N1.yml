@@ -108,7 +108,10 @@ jobs:
       uses: unifreq/openwrt_packit@master
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/armsr/armv8/*rootfs.tar.gz
-        KERNEL_VERSION_NAME: 6.6.y_6.12.y
+        # flippy内核版本, 在6.6及之后的版本不再提供 +o 的版本
+        KERNEL_VERSION_NAME: 6.12.y
+        # 指定flippy内核从哪个仓库下载, ophub的版本会新一点
+        # KERNEL_REPO_URL: ophub/kernel
         PACKAGE_SOC: diy
         SCRIPT_DIY_PATH: mkIMG.sh
         WHOAMI: daydreams
