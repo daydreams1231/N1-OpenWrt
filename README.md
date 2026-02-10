@@ -37,7 +37,12 @@
 关闭lan区域的dhcp服务器, 并将IPv6 DHCP相关项全部禁用 <br>
 > 并不是说旁路由和IPv6天生八字不和, 只是大部分设备自己改不了IPv6网关, 导致若DNS解析到ipv6, 一定绕过旁路由走直连
 
-# 换源
+3: 前往SSH, 修改/usr/lib/lua/luci/view/easytier/easytier_status.htm <br>
+删掉如下这行. 在新版本OpenWRT中会显示异常 <br>
+```html
+html += "<tr><td style='padding:2px 16px 2px 0;'>当前 / 最新版本</td><td>" + data.ettag + " / " + data.etnewtag + "</td></tr>";
+```
+## 换源
 由于是基于大版本(v25.12)的snatshot版本构建的, 换源时为了兼容性考虑不建议换用小版本(v25.12.x)的源 <br>
 由于内核不是官方内核, 换源时不建议添加kmod源 <br>
 当然, 如果内核版本和官方版本相差不大, 可酌情换用 <br>
@@ -156,7 +161,7 @@ p 打印分区表
 n 新建分区, 起始扇区是139264, 结束扇区是1185791, 共计512M的Boot分区
 n 新建分区, 起始: 1638400, 结束: 15269887, 共计6.5G的rootfs
 
-mkfs.fat -F32 /dev/mmcblk2p1
+mkfs.fat -F32 -L BOOT_EMMC /dev/mmcblk2p1
 mkfs.btrfs -m single -L rootfs /dev/mmcblk2p2
 
 # 获取这两个分区的UUID
@@ -201,7 +206,7 @@ exit 0
 ```shell
 # 修改 /mnt/etc/fstab, 写入两行:
 UUID=<EMMC_ROOTFS_UUID> /     btrfs compress=zstd:6 0 1
-LABEL=<EMMC_BOOT_UUID>   /boot vfat  defaults        0 2
+LABEL=BOOT_EMMC   /boot vfat  defaults        0 2
 
 # 修改 /mnt/etc/config/fstab
 config  global
@@ -222,7 +227,7 @@ config  mount
 
 config  mount
         option target '/boot'
-        option uuid '<EMMC_BOOT_UUID>' # 注意两端引号别掉了
+        option label 'BOOT_EMMC'
         option enabled '1'
         option enabled_fsck '1'
         option fstype 'vfat'
@@ -232,20 +237,41 @@ config  mount
 mv <eMMC>/etc/config/balance_irq <eMMC>/etc/balance_irq
 ```
 ## 完成
+总脚本
 ```shell
 #!/bin/sh
 
-mkdir -p /mnt/{boot,rootfs}
+cd /mnt && mkdir boot rootfs
 mount /dev/mmcblk2p1 /mnt/boot
-mount /dev/mmcblk2p2 /mnt/rootfs
+rm /mnt/boot/s905* /mnt/boot/aml*
+mount -t btrfs -o compress=zstd:6 /dev/mmcblk2p2 /mnt/rootfs
 
-tar -cf - /boot | tar -xpf - -C /mnt/boot
-tar --exclude='boot' --exclude='dev' --exclude='mnt' --exclude='proc' --exclude='rom' --exclude='run' --exclude='sys' --exclude='tmp' -cf - / | tar -xpf - -C /mnt/rootfs
-mkdir -p /mnt/rootfs/{boot,dev,mnt,proc,rom,run,sys,tmp}
+cd /
+tar -cf - boot | tar -xpf - -C /mnt
+
+COPY_SRC="bin etc lib root sbin usr www"
+for src in ${COPY_SRC}; do
+    if [[ -d "${src}" ]]; then
+        echo -e "Copying [ ${src} ] ..."
+        tar -cf - ${src} | (
+            cd /mnt/rootfs
+            tar -xpf -
+        )
+    fi
+done
+
+cd /mnt/rootfs
+mkdir boot dev mnt proc overlay rom run sys tmp
+
+ln -s tmp var && ln -s lib lib64
 
 blkid | grep /dev/mmcblk2
 
-umount -R /mnt
+vim /mnt/boot/uEnv.txt
+vim /mnt/rootfs/etc/fstab
+vim /mnt/rootfs/etc/config/fstab
+
+umount /mnt/*
 ```
 
 # Amlogic 启动顺序
