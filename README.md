@@ -57,6 +57,11 @@ https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_
 https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/routing/packages.adb
 https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_generic/telephony/packages.adb
 ```
+
+## balethirq.pl
+```text
+可能缺失: perl-file-next
+```
 ## Q&A
 ### N1盒子在作为旁路由时测速跑不满或者很低(100M左右)
 在排除软件, 网线质量等外部因素后, 只可能是内核或者硬件的问题了 <br>
@@ -80,7 +85,7 @@ https://mirrors.pku.edu.cn/immortalwrt/releases/25.12-SNAPSHOT/packages/aarch64_
   - 执行 dmesg | grep "flow control", 查看网卡流控情况, 如果是off, 进行第三步; 如果是 rx/tx, 你的N1应该是能跑满转发性能的, 不用继续看了
   - 修改 /boot/uEnv.txt, 修改FDT指向的dtb文件, 新的dtb文件名为: meson-gxl-s905d-phicomm-n1-thresh.dtb
   - 重启系统. 在指定新的dtb后, flow control应该总是off了, 因为此时使用软件流控了
-
+使用软件流控的代价就是在高负载时, 单核几乎跑满
 不得不说, 网上几乎没有关于这个dtb的介绍, 提及这个的也就几个网站 <br>
 
 # 从USB全新安装到eMMC操作
