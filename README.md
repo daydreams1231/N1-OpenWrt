@@ -12,8 +12,11 @@
 ### [luci-app-easytier](https://github.com/EasyTier/luci-app-easytier) Easytier组网工具
 用于异地组网 <br>
 ### luci-app-openclash / luci-app-homeproxy / 手搓旁路由
-前面两者占用大差不差, N1有2G内存, 对一个旁路由而言肯定是够的. 但考虑到现在sing-box已经支持clash-api了, 而mihomo却还不支持prefer ipv4的dns解析策略, 可以逐渐转向homeproxy <br>
 如果都不喜欢, 可以手搓旁路由, 相较于在普通Linux上手搓, Openwrt肯定还是方便些的. <br>
+
+就性能而言, 两者大差不差; 在资源使用方面, N1有2G内存, 对一个旁路由而言肯定是够的; <br>
+偶尔看到一个[discussion](https://github.com/XTLS/Xray-core/discussions/4753), 感觉还是老实用clash吧 <br>
+由于clash mihomo一直不支持xhttp, 等了老久连半点消息没有, 故个人选择mihomo + xray模式 <br>
 ### luci-proto-wireguard
 启用Wireguard支持
 
@@ -321,6 +324,16 @@ See: <br>
 [[ "$(hexdump -n 15 -x "/boot/zImage" 2>/dev/null | head -n 1 | awk '{print $7}')" == "0108" ]] && echo "内核版本小于5.10, 或是Patch内核, 无需重载"
 ```
 
+### OES快捷刷机指南
+[ref](https://github.com/retro98boy/onethingcloud-oes-linux?tab=readme-ov-file#pyamlboot) <br>
+相对于刷入整个救机包再开机手动设置环境变量的办法，本脚本只刷入U-Boot并自动设置环境变量，更快捷也节省eMMC寿命 <br>
+
+oes有5个dtb:
+  - meson-g12b-a311d-oes-00050000.dtb 不行
+  - meson-g12b-a311d-oes.dtb 默认用的这个, 转发跑不满
+  - meson-g12b-a311d-onethingcloud-oes.dtb 实测也跑不满
+  - meson-g12b-a311d-onethingcloud-oes-rgmii-rx-delay-3000ps.dtb 网络故障, 无法连接
+  - meson-g12b-oes.dtb 实测也跑不满
 # 致谢
 本项目基于 [ImmortalWrt-25.12](https://github.com/immortalwrt/immortalwrt/tree/openwrt-25.12) 源码编译，使用 flippy 的[脚本](https://github.com/unifreq/openwrt_packit)和 ophub 维护的[内核](https://github.com/ophub/kernel/releases/tag/kernel_stable)打包成完整固件，感谢开发者们的无私分享。<br>
 flippy 固件的更多细节参考[恩山论坛帖子](https://www.right.com.cn/forum/thread-4076037-1-1.html)。 <br>
